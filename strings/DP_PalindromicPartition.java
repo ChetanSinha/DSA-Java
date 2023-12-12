@@ -1,6 +1,6 @@
 import java.util.*;
 
-public class StringJavaRough {
+public class DP_PalindromicPartition {
 
     // file:///Users/chesin/Downloads/Telegram%20Desktop/Ace%20the%20Java%20Coding%20Interview/2.%20Data%20Structures/4.%20Strings/13.%20Palindromic%20Partitioning.html
 
