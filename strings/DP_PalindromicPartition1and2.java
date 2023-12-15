@@ -1,6 +1,6 @@
 import java.util.*;
 
-public class DP_PalindromicPartition {
+public class DP_PalindromicPartition1and2 {
 
     // file:///Users/chesin/Downloads/Telegram%20Desktop/Ace%20the%20Java%20Coding%20Interview/2.%20Data%20Structures/4.%20Strings/13.%20Palindromic%20Partitioning.html
 
@@ -15,7 +15,7 @@ public class DP_PalindromicPartition {
 
         while (t != 0) {
             String str = scanner.nextLine();
-            Integer result = partition2(str);
+            Integer result = partition3(str);
             System.out.println("result: " + result);
             t -= 1;
         }

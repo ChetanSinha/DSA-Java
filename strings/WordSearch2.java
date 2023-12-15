@@ -11,7 +11,7 @@ class Pair {
 }
 
 
-public class StringJavaRough {
+public class WordSearch2 {
 
 
     // https://leetcode.com/problems/word-search-ii/description/
