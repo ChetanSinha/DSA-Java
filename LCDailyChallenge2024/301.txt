@@ -1,0 +1,46 @@
+https://leetcode.com/problems/number-of-laser-beams-in-a-bank/submissions/?envType=daily-question&envId=2024-01-03
+
+class Solution {
+
+    private int func(String[] bank) {
+
+        // create array that stores the count of 1s in current row, and the latest row in which security device was seen before
+        int[][] arr = new int[bank.length][2];
+
+        int devicesBeforeRow = -1;
+        for (int i=0; i<bank.length; i++) {
+            int devicesCount = 0;
+            for (int j=0; j<bank[i].length(); j++) {
+                if (bank[i].charAt(j) == '1') {
+                    devicesCount += 1;
+                }
+            }
+
+            if (devicesCount > 0) {
+                arr[i][0] = devicesCount;
+                arr[i][1] = devicesBeforeRow;
+
+                devicesBeforeRow = i;
+            }
+        }
+
+        int count = 0;
+
+        // iterate over the array and compute the result for each row pairs
+        for (int i=0; i<arr.length; i++) {
+            if (arr[i][0] > 0) {
+                for (int j=i+1; j<arr.length; j++) {
+                    if (arr[j][0] > 0 && arr[j][1] <= i) {
+                        count += arr[j][0] * arr[i][0];
+                    }
+                }
+            } 
+        }
+
+        return count;
+    }
+
+    public int numberOfBeams(String[] bank) {
+        return func(bank);
+    }
+}

@@ -1,8 +1,7 @@
-import java.util.HashMap;
 import java.util.Scanner;
 import java.util.Stack;
 
-public class JavaRough {
+public class IdentifyCelebrity {
     // file:///Users/chesin/Downloads/Telegram%20Desktop/Ace%20the%20Java%20Coding%20Interview/2.%20Data%20Structures/5.%20Stacks%20and%20Queues/20.%20Challenge%208%3A%20Solve%20a%20Celebrity%20Problem%20using%20a%20Stack.html
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);

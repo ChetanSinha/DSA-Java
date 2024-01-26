@@ -1,0 +1,31 @@
+https://leetcode.com/problems/assign-cookies/submissions/?envType=daily-question&envId=2024-01-01
+
+class Solution {
+
+    private int func(int[] g, int[] s) {
+        Arrays.sort(g);
+        Arrays.sort(s);
+
+        int gPtr = g.length-1;
+        int sPtr = s.length-1;
+
+        int ans = 0;
+
+        // pick if satisfied, bypass if not
+        while (gPtr >= 0 && sPtr >= 0) {
+            if (g[gPtr] <= s[sPtr]) {
+                gPtr -= 1;
+                sPtr -= 1;
+                ans += 1;
+            } else {
+                gPtr -= 1;
+            }
+        }
+
+        return ans;
+    }
+
+    public int findContentChildren(int[] g, int[] s) {
+        return func(g, s);
+    }
+}

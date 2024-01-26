@@ -1,0 +1,101 @@
+// https://leetcode.com/problems/pseudo-palindromic-paths-in-a-binary-tree/?envType=daily-question&envId=2024-01-24
+
+
+
+/*
+    Previous sol needs to update map for every node in tree
+    since constraint is for 1 - 9 we can use bit manipulation to maintain counts for each digit
+
+    basically at last, we only want number of odd occurrences, if they are more than 1 then it is not palindrome
+
+    therefore, we can maintain bit counts, which will store set corresponding to all the odd occurrences
+
+    we'll take xor of result with the position of root value.
+    in case if that bit was already set (ie that value was Previously found), xor will unset the bit
+    marking it as even occurrence
+
+    at last, in leaf node, we just need to check if the number has all zeros or just single ones to qualify as palindrome
+    for that we can check if  x & (x-1) gives 0 or not.
+    
+    taking x & (x-1) will confirm if x has just one set bit or not.
+*/
+class Solution {
+
+    int ans;
+    private void func(TreeNode root, int bitCounts) {
+        if (root == null) {
+            return;
+        }
+
+        bitCounts = bitCounts ^ (1 << root.val);
+        if (root.left == null && root.right == null) {
+            if ((bitCounts & (bitCounts-1)) == 0) {
+                ans += 1;
+            }
+            return;
+        }
+        func(root.left, bitCounts);
+        func(root.right, bitCounts);
+    }
+
+    public int pseudoPalindromicPaths (TreeNode root) {
+        ans = 0;
+        func(root, 0);
+        return ans;
+    }
+}
+
+
+
+/*
+    Use map to maintain counts corresponding to each number,
+    at leaf node, check if map has only one odd occurrence.
+*/
+class Solution {
+
+    int ans;
+    private boolean checkPalindromic(HashMap<Integer, Integer> map) {
+        boolean foundOdd = false;
+        for (Map.Entry<Integer, Integer> entry: map.entrySet()) {
+            if ((entry.getValue() % 2) != 0) {
+                if (foundOdd) {
+                    return false;
+                } else {
+                    foundOdd = true;
+                }
+            }
+        }
+
+        return true;
+    }
+
+    private void func(TreeNode root, HashMap<Integer, Integer> map) {
+        if (root == null) {
+            return;
+        }
+
+        if (root.left == null && root.right == null) {
+            map.put(root.val, map.getOrDefault(root.val, 0) + 1);
+            if (checkPalindromic(map)) {
+                ans += 1;
+            }
+            map.put(root.val, map.get(root.val) - 1);
+            return;
+        }
+
+
+        map.put(root.val, map.getOrDefault(root.val, 0) + 1);
+
+        func(root.left, map);
+        func(root.right, map);
+
+        map.put(root.val, map.get(root.val) - 1);
+    }
+
+    public int pseudoPalindromicPaths (TreeNode root) {
+        HashMap<Integer, Integer> map = new HashMap<>();
+        ans = 0;
+        func(root, map);
+        return ans;
+    }
+}

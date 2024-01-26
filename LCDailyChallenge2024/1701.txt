@@ -1,0 +1,23 @@
+//https://leetcode.com/problems/unique-number-of-occurrences/
+
+class Solution {
+    public boolean uniqueOccurrences(int[] arr) {
+        Arrays.sort(arr);
+        
+        HashSet<Integer> counts = new HashSet<>();
+        int count = 1;
+        for (int i=1; i<arr.length; i++) {
+            if (arr[i] != arr[i-1]) {
+                if (counts.contains(count)) return false;
+                counts.add(count);
+                count = 0;
+            }
+
+            count += 1;
+        }
+
+        if (counts.contains(count)) return false;
+
+        return true;
+    }
+}

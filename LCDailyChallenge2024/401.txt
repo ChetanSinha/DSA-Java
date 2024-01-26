@@ -1,0 +1,39 @@
+// https://leetcode.com/problems/minimum-number-of-operations-to-make-array-empty/submissions/?envType=daily-question&envId=2024-01-04
+
+
+
+// "every number apart from 1, can be divided by combinition of 3 and 2"
+
+// eg: 7 -> 3*1 + 2*2
+
+class Solution {
+    private int func(int[] nums) {
+        HashMap<Integer, Integer> map = new HashMap<>();
+        for (int num : nums) {
+            map.put(num, map.getOrDefault(num, 0) + 1);
+        }
+        
+
+        int ans = 0;
+        for (Map.Entry<Integer, Integer> entry : map.entrySet()) {
+            int num = entry.getValue();
+            if (num == 1) {
+                return -1;
+            }
+
+
+            ans += num / 3; 
+
+            // num % 3 => 1 or 2
+            // for 1 -> take 3 from one of num/3 and 1 from num%3, this means total 2 2s can be consumed
+            // for 2 -> straight 2 
+            if (num % 3 != 0) 
+                ans += 1;
+        }
+        return ans;
+    }
+
+    public int minOperations(int[] nums) {
+        return func(nums);
+    }
+}

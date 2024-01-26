@@ -1,6 +1,6 @@
 import java.util.*;
 
-public class StringJavaRough {
+public class DP_EditDistance {
 
     // https://leetcode.com/problems/edit-distance/description/
 

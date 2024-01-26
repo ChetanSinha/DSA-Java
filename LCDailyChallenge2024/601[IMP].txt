@@ -1,0 +1,67 @@
+// https://leetcode.com/problems/maximum-profit-in-job-scheduling/submissions/?envType=daily-question&envId=2024-01-06
+
+
+
+class Solution {
+
+
+    // binary search to search for next start time >= current job end (or upper bound of current job end)
+    private int getNext(Integer[] sortedIdx, int l, int[] s, int currentJobEnd) {
+        int h = sortedIdx.length-1;
+
+        int result = sortedIdx.length;
+        while (l <= h) {
+            int mid = l + (h-l)/2;
+
+            if (s[sortedIdx[mid]] >= currentJobEnd) {
+                result = mid;
+                h = mid-1;
+            } else {
+                l = mid+1;
+            }
+        }
+
+        return result;
+    }
+
+    private int func(int[] dp, Integer[] sortedIdx, int[] s, int[] e, int[] p, int i) {
+        if (i >= s.length) {
+            return 0;
+        }
+
+        if (dp[i] != -1) {
+            // memoization
+            return dp[i];
+        }
+
+        // get sorted index to fetch number from start time, profit, and end time.
+        int idx = sortedIdx[i];
+
+        // get next index that qualifies (with start time) based on current end time
+        int next = getNext(sortedIdx, i, s, e[idx]);
+
+        // compute profit if we take current element
+        int taken = p[idx] + func(dp, sortedIdx, s, e, p, next);
+
+        // compute profit if we do not take current element
+        int notTaken = func(dp, sortedIdx, s, e, p, i+1);
+
+        return dp[i] = Math.max(taken, notTaken);
+    }
+
+    public int jobScheduling(int[] startTime, int[] endTime, int[] profit) {
+        int[] dp = new int[startTime.length];
+        Arrays.fill(dp, -1);
+
+
+        // created sorted indexes array based on start time.
+        Integer[] sortedIdxes = new Integer[startTime.length];
+        for (int i = 0; i < sortedIdxes.length; i++) {
+            sortedIdxes[i] = i;
+        }
+        Arrays.sort(sortedIdxes, Comparator.comparingInt(i -> startTime[i]));
+
+
+        return func(dp, sortedIdxes, startTime, endTime, profit, 0);
+    }
+}

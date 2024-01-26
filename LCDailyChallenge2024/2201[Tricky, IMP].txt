@@ -1,0 +1,144 @@
+// https://leetcode.com/problems/set-mismatch/?envType=daily-question&envId=2024-01-22
+
+
+// O(n) time, O(1) space
+/*
+    store -1 in all the visited indexes (as per 1 to n numbers)
+    while doing so, if we visited any value which is negative then it is duplicate
+
+    traverse manipulated array again, and the positive item (ie the one which is not changed) is the missing
+*/
+class Solution {
+    public int[] findErrorNums(int[] nums) {
+        int dup = 0;
+        int mis = 0;
+        for (int i=0; i<nums.length; i++) {
+            if (nums[Math.abs(nums[i])-1] < 0) {
+                dup = Math.abs(nums[i]);
+            } else {
+                nums[Math.abs(nums[i])-1] *= -1;
+            }
+        }
+
+        for (int i=0; i<nums.length; i++) {
+            if (nums[i] > 0) {
+                mis = i+1;
+                break;
+            }
+        }
+
+        return new int[]{dup, mis};
+    }
+}
+
+
+
+// O(n) time, O(1) space - XOR solution
+/*
+    xor rules -> x^x = 0 ; 0^x = x
+
+    Take xor of all array elements - x1
+    take xor of all numbers from 1 to n - x2
+
+    take xor result as x1 ^ x2
+
+
+    since there is only one duplicate, all the other elements will get cancelled out by its 
+    corresponding presence in xor of 1 to n 
+    ie for arr: [1,2,2,4] 
+    if we take xor with 1 to n ie [1,2,3,4] -> 2^3 will remain
+
+    and these are our duplicate and missing element.
+
+    now we just need to separate them out.
+
+
+    since xor will give set bit only when any one of the numbers have set bit at that position
+    we can separate numbers into two groups - one with set bit at that position and one with unset bit
+
+
+    and since all the other numbers have exactly 2 occurrences (including array occurrence and 1 to n occurence)
+    all those numbers will exactly lie in any one specific group and cancel itself out if we take xor
+
+
+    eg: 2 -> 0010 and 3 -> 0011
+    right most set bit is at 1
+
+    therefore we separate numbers in two groups based on set bit at 1
+
+    all occurences included
+    group1 -> [1, 1, 3]
+    group2 -> [2, 2, 2, 4, 4]
+
+    taking xor of each group separately will give 3 in group1 and 2 in group 2
+
+    lastly we iterate through the array to find which group contains the duplicate one.
+
+*/
+class Solution {
+    public int[] findErrorNums(int[] nums) {
+        int xorAll = 0;
+        int xorArr = 0;
+
+        for (int i=0; i<nums.length; i++) {
+            xorAll ^= i+1;
+            xorArr ^= nums[i];
+        }
+
+        int xorRes = xorAll ^ xorArr;
+
+        int rightMostSet = xorRes & (-xorRes);
+
+        int xorSet = 0;
+        int xorNotSet = 0;
+
+        for (int i=0; i<nums.length; i++) {
+            if ((nums[i] & rightMostSet) != 0) { // grouping from array elements
+                xorSet ^= nums[i];
+            } else {
+                xorNotSet ^= nums[i];
+            }
+
+            if ((i+1 & rightMostSet) != 0) { // grouping from 1 to n
+                xorSet ^= i+1;
+            } else {
+                xorNotSet ^= i+1;
+            }
+        }
+
+        for (int num : nums) {
+            if (num == xorSet) {
+                return new int[]{xorSet, xorNotSet};
+            }
+        }
+
+        return new int[]{xorNotSet, xorSet};
+    }
+}
+
+
+
+// O(n) time, O(n) space Solution
+class Solution {
+    public int[] findErrorNums(int[] nums) {
+        int totalSum = 0;
+        int arraySum = 0;
+        HashSet<Integer> unique = new HashSet<>();
+        for (int i=0; i<nums.length; i++) {
+            totalSum += i+1;
+            arraySum += nums[i];
+            unique.add(nums[i]);
+        }
+
+        int uniqueSum = 0;
+        for (Integer el: unique) {
+            uniqueSum += el;
+        }
+
+
+        // missing element: total sum from 1 to n - total unique element sum present
+        // duplicate element: total sum of array - total unique element sum present
+
+        return new int[]{arraySum-uniqueSum, totalSum-uniqueSum};
+    }
+}

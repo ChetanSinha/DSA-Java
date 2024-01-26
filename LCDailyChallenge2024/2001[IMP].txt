@@ -1,0 +1,109 @@
+// https://leetcode.com/problems/sum-of-subarray-minimums/?envType=daily-question&envId=2024-01-20
+
+
+// o(n) solution
+/*
+    we just need to find min element of each subarray. 
+    lets say arr[i] is min of subarray from index a to index b (a <= i <= b)
+
+    then for any subarray (with index i) in this range, will give arr[i] as min
+    eg:
+        arr => 0,4,3,2,6,1
+
+        in subarray index 1 to 4 (ie from 4 to 6), 2 is the min
+        2 will be min for all the subarray containing index of 2 in this range
+        ie: for subarray => [4,3,2],[3,2],[2],[2,6],[4,3,2,6],[3,2,6] => 2 is the min
+
+    Therefore, for each index we just need to find the range in left and right till which it is min
+    which we can do using next smaller element in left and next smaller element in right
+
+    for this ex: NSL of 2 => index 0, NSR of 2 => index 5
+    and number of subarrays in which 2 is min can be found using: 
+        -> (number of elements in left + 1) * (number of elements in right + 1)
+        -> which is nothing but => (index of 2 - NSL of 2) * (NSR of 2 - index of 2) 
+
+    Note: if we cant able to find any smaller element in left we make NSL as -1 and for right NSR as n
+
+    for duplicates (tricky part):
+        - array: [2,6,2,5,2]
+        if we don't apply boundaries on equal elements (index 0, index 2, index 4)
+        then we will get duplicate results
+
+        ie 2 at index 0 -> will be considered min for [2,6,2,5,2]
+        2 at index 2 -> will also be considered min for [2,6,2,5,2] so on..
+
+        therefore, we need to apply boundary at any one side of the range of next smallest
+
+        if we apply at left then: 
+        [2,6,2,5,2] will be considered for 2 at index 0 but not for index 2 and index 4
+        NSL of 2 at index 2 will be index 0 and hence [2,6,2,5,2] will not be considered in processing of index 2
+
+        if we apply at right then:
+        [2,6,2,5,2] will be considered for 2 at index 4 but not for index 2 and index 0
+
+
+        Why not both ends?
+        Then any of 2 will not cover [2,6,2,5,2] subarray, hence miss.
+*/
+class Solution {
+    public int sumSubarrayMins(int[] arr) {
+        int n = arr.length;
+        int[] left = new int[n];
+        int[] right = new int[n];
+
+        Arrays.fill(right, n);
+
+        Stack<Integer> stk = new Stack<>();
+        stk.add(-1);
+        for (int i=0; i<n; i++) {
+            while (stk.peek() != -1 && arr[stk.peek()] >= arr[i]) {   // boundary at left
+                stk.pop();
+            }
+            left[i] = stk.peek();
+            stk.add(i);
+        }
+
+        stk = new Stack<>();
+        stk.add(n);
+
+        for (int i=n-1; i>=0; i--) {
+            while (stk.peek() != n && arr[stk.peek()] > arr[i]) {
+                stk.pop();
+            }
+            right[i] = stk.peek();
+            stk.add(i);
+        }
+
+        long ans = 0;
+        int mod = 1000000007;
+        for (int i=0; i<n; i++) {
+            ans += (long) (i-left[i]) * (right[i]-i) % mod * arr[i] % mod;  // result
+            ans %= mod;
+        }
+
+        return (int) ans;
+    }
+}
+
+
+// o(n^2) - DP Solution
+class Solution {
+    public int sumSubarrayMins(int[] arr) {
+        int[][] dp = new int[arr.length][arr.length];
+        long ans = 0;
+        int mod = 1000000007;
+
+        for (int i = 0; i < dp.length; i++) {
+            for (int j = i; j < dp[0].length; j++) {
+                if (j == i) {
+                    dp[i][j] = arr[i];
+                } else {
+                    dp[i][j] = Math.min(Math.min(arr[i], arr[j]), dp[i][j - 1]);
+                }
+                ans += dp[i][j];
+            }
+        }
+
+        return (int) (ans % mod);
+    }
+}

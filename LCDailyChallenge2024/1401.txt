@@ -1,0 +1,42 @@
+// https://leetcode.com/problems/determine-if-two-strings-are-close/?envType=daily-question&envId=2024-01-14
+
+
+/*
+two strings are closed iff both has same unique chars, and count of any char in word1 matches with count of any char in word2
+*/
+class Solution {
+    public boolean closeStrings(String word1, String word2) {
+        if (word1.length() != word2.length()) {
+            return false;
+        }
+
+        int[] chars1 = new int[26];
+        int[] chars2 = new int[26];
+
+        Arrays.fill(chars1, 0);
+        Arrays.fill(chars2, 0);
+
+        for (int i=0; i<word1.length(); i++) {
+            chars1[word1.charAt(i) - 'a'] += 1;
+            chars2[word2.charAt(i) - 'a'] += 1;
+        }
+
+        for (int i=0; i<26; i++) {
+            if ((chars1[i] == 0 && chars2[i] != 0) || (chars1[i] != 0 && chars2[i] == 0)) {
+                return false;
+            }
+        }
+
+
+        Arrays.sort(chars1);
+        Arrays.sort(chars2);
+
+        for (int i=0; i<26; i++) {
+            if (chars1[i] != chars2[i]) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+}

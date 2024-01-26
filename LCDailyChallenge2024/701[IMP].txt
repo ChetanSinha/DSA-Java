@@ -1,0 +1,46 @@
+https://leetcode.com/problems/arithmetic-slices-ii-subsequence/submissions/
+
+
+
+/*
+    Consider each index as seperate subarray from 0 to that index, and find the number of arithmetic subsequence
+
+    for that at each index compute the number of times diff is seen (diff with each of index between 0 and i)
+
+    if this diff (between i and j (0 <= j < i)) is also seen while computing the same at j, this means there was some element before (ie 0 <= x < j) that had same diff with j 
+
+    Therefore this will contribute to the result
+
+
+    Note: if we have find the diff before that means, already 2 pairs exists for this, and now we found third for the triplet, there it can be consider for the answer
+*/
+class Solution {
+    private int func(int[] nums) {
+        if (nums.length < 3) {
+            return 0;
+        }
+
+        HashMap<Long, Integer>[] arr = new HashMap[nums.length];
+
+        for (int i=0; i<arr.length; i++) {
+            arr[i] = new HashMap<>();
+        }
+
+        int ans = 0;
+        for (int i=0; i<nums.length; i++) {
+            for (int j=0; j<i; j++) {
+                long diff = (long) nums[i]-nums[j];
+                int apEndingAtJWithThisDiff = arr[j].getOrDefault(diff, 0);
+                ans += apEndingAtJWithThisDiff; // including on ap ending at j with this diff because, those number of aps added with i on them will make the ap subsequence.
+                int apEndingAtIWithThisDiff = arr[i].getOrDefault(diff, 0);
+                arr[i].put(diff, apEndingAtIWithThisDiff + apEndingAtJWithThisDiff + 1);
+            }
+        }
+
+        return ans;
+    }
+
+    public int numberOfArithmeticSlices(int[] nums) {
+        return func(nums);
+    }
+}

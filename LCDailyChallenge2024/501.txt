@@ -1,0 +1,44 @@
+https://leetcode.com/problems/longest-increasing-subsequence/submissions/?envType=daily-question&envId=2024-01-05
+
+class Solution {
+    /*
+        maintain prevIdx, which will store the index at which latest num of increasing subsequence is present
+        (for start it will be -1)
+        for every index there could be 2 possiblities:
+        1. current number > num at prevIdx (current is part of increasing subsequence)
+        2. or current num < num at prevIdx (current is not part of increasing subsequence)
+
+        for case 1 there could be 2 possiblities:  
+            - choose current
+            - do not choose current
+    */
+
+    private int func(int[][] dp, int[] nums, int idx, int prevIdx) {
+        if (idx >= nums.length) {
+            return 0;
+        }
+
+        if (dp[idx][prevIdx+1] != -1) {
+            return dp[idx][prevIdx+1];
+        }
+
+        int ans;
+        if (prevIdx == -1 || nums[idx] > nums[prevIdx]) {
+            ans = Math.max(func(dp, nums, idx+1, prevIdx), func(dp, nums, idx+1, idx) + 1);
+        } else {
+            ans = func(dp, nums, idx+1, prevIdx);
+        }
+        return dp[idx][prevIdx+1] = ans;
+    }
+
+    public int lengthOfLIS(int[] nums) {
+        int[][] dp = new int[nums.length][nums.length+1];
+
+        for (int i=0; i<dp.length; i++) {
+            for (int j=0; j<dp[0].length; j++) {
+                dp[i][j] = -1;
+            }
+        }
+        return func(dp, nums, 0, -1);
+    }
+}

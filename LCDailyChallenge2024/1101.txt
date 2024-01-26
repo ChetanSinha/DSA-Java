@@ -1,0 +1,75 @@
+// https://leetcode.com/problems/maximum-difference-between-node-and-ancestor/?envType=daily-question&envId=2024-01-11
+
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode() {}
+ *     TreeNode(int val) { this.val = val; }
+ *     TreeNode(int val, TreeNode left, TreeNode right) {
+ *         this.val = val;
+ *         this.left = left;
+ *         this.right = right;
+ *     }
+ * }
+ */
+
+/*
+    Max absolute difference between an ancestor and child can be checked by having both MAX and MIN value present in the child
+    therefore at each node, we get MAX and MIN in whole current subtree, and compare.
+
+*/
+class Data {
+    Integer min;
+    Integer max;
+
+    Data(Integer min, Integer max) {
+        this.min = min;
+        this.max = max;
+    }
+}
+
+class Solution {
+    int MAX_VALUE;
+
+    private Data func(TreeNode root) {
+        if (root == null) {
+            return null;
+        }
+
+        Data left = func(root.left);
+        Data right = func(root.right);
+
+        if (left == null && right == null) {
+            // leaf node
+            return new Data(root.val, root.val);
+        }
+
+        Integer max, min;
+
+        if (left != null && right != null) {
+            // both child parent
+            max = Math.max(left.max, right.max);
+            min = Math.min(left.min, right.min);
+        } else if (left != null) {
+            // left child parent
+            max = left.max;
+            min = left.min;
+        } else {
+            // right child parent
+            max = right.max;
+            min = right.min;
+        }
+
+        MAX_VALUE = Math.max(MAX_VALUE, Math.max(Math.abs(root.val - max), Math.abs(root.val - min)));
+        return new Data(Math.min(root.val, min), Math.max(root.val, max));
+   }
+
+    public int maxAncestorDiff(TreeNode root) {
+        MAX_VALUE = 0;
+        func(root);
+        return MAX_VALUE;
+    }
+}

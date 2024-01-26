@@ -1,0 +1,43 @@
+// https://leetcode.com/problems/range-sum-of-bst/description/?envType=daily-question&envId=2024-01-08
+
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode() {}
+ *     TreeNode(int val) { this.val = val; }
+ *     TreeNode(int val, TreeNode left, TreeNode right) {
+ *         this.val = val;
+ *         this.left = left;
+ *         this.right = right;
+ *     }
+ * }
+ */
+class Solution {
+    private int func(TreeNode root, int low, int high) {
+        if (root == null) {
+            return 0;
+        }
+
+        int val = 0;
+        if (low <= root.val && root.val <= high) {
+            val += root.val;
+        }
+
+        if (root.val >= low) {
+            val += func(root.left, low, high);
+        }
+
+        if (root.val <= high) {
+            val += func(root.right, low, high);
+        }
+
+        return val;
+    }
+
+    public int rangeSumBST(TreeNode root, int low, int high) {
+        return func(root, low, high);   
+    }
+}

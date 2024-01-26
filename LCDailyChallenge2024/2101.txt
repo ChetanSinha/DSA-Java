@@ -1,0 +1,30 @@
+// https://leetcode.com/problems/house-robber/?envType=daily-question&envId=2024-01-21
+
+class Solution {
+
+    private int func(int[] nums, int prevTaken, int idx, int[][] dp) {
+        if (idx >= nums.length) {
+            return 0;
+        }
+
+        if (dp[idx][prevTaken] != -1) {
+            return dp[idx][prevTaken];
+        }
+
+        int ans = func(nums, 0, idx+1, dp);
+        if (prevTaken == 0) {
+            ans = Math.max(ans, func(nums, 1, idx+1, dp) + nums[idx]);
+        } 
+        return dp[idx][prevTaken] = ans;
+    }
+
+    public int rob(int[] nums) {
+        int[][] dp = new int[nums.length][2];
+
+        for (int i=0; i<dp.length; i++) {
+            Arrays.fill(dp[i], -1);
+        }
+
+        return func(nums, 0, 0, dp);
+    }
+}
