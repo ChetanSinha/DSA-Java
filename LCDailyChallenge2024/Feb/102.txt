@@ -1,0 +1,32 @@
+https://leetcode.com/problems/divide-array-into-arrays-with-max-difference/description/
+
+
+// sort and pick - greedy
+class Solution {
+    public int[][] divideArray(int[] nums, int k) {
+        Arrays.sort(nums);
+
+        int n = nums.length;
+        if (n % 3 != 0) {
+            return new int[][]{};
+        }
+        int row = n/3;
+        int col = 3;
+        int[][] ans = new int[row][col];
+
+        for (int r=0; r<row; r++) {
+            int prev = -1;
+            for (int c=0; c<col; c++) {
+                int num_idx = col*r + c;
+                if (prev == -1) {
+                    prev = nums[num_idx];
+                }
+                if (nums[num_idx] - prev > k) {
+                    return new int[][]{};
+                }
+                ans[r][c] = nums[num_idx];
+            }
+        }
+        return ans;
+    }
+}

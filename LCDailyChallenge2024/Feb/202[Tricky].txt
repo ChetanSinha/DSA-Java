@@ -1,0 +1,24 @@
+https://leetcode.com/problems/sequential-digits/description/
+
+
+// Generate all number which has the next digit incremented by 1
+// eg: 12, 123, 1234 so on
+// check if that number lies within given range
+// sort the final result
+
+class Solution {
+    public List<Integer> sequentialDigits(int low, int high) {
+        List<Integer> ans = new ArrayList<>();
+        for (int i=1; i<=9; i++) { // number starting with i
+            int num = i;
+            for (int j=i+1; j<=9; j++) { // generating the next subsequent digits 
+                num = num*10 + j;
+                if (num >= low && num <= high) {
+                    ans.add(num);
+                }
+            }
+        }
+        Collections.sort(ans);
+        return ans;
+    }
+}

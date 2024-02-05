@@ -3,56 +3,104 @@ package trees;
 
 import java.util.Scanner;
 
+
 public class JavaRough {
+    static class NaryTreeNode {
+        int val;
+        NaryTreeNode[] child;
+    }
+
+    static class TreeNode {
+        int val;
+        TreeNode left;
+        TreeNode right;
+    }
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         int t = scanner.nextInt();
 
         while (t != 0) {
-            int n = scanner.nextInt();
-            BST tree = new BST();
-            for (int i=0; i<n; i++) {
-                tree.insertBST(scanner.nextInt());
+            NaryTreeNode root = createNaryNode(1);
+            NaryTreeNode child1 = createNaryNode(2);
+            NaryTreeNode child2 = createNaryNode(3);
+            NaryTreeNode child21 = createNaryNode(5);
+            NaryTreeNode child22 = createNaryNode(6);
+            NaryTreeNode child3 = createNaryNode(4);
+
+            child2.child = new NaryTreeNode[2];
+            child2.child[0] = child21;
+            child2.child[1] = child22;
+
+            root.child = new NaryTreeNode[3];
+            root.child[0] = child1;
+            root.child[1] = child2;
+            root.child[2] = child3;
+
+            TreeNode bt = convertNaryToBT(root);
+            int height = getHeight(bt);
+            for (int i=1; i<= height; i++) {
+                printLevelOrder(bt, i);
+                System.out.println();
             }
-            tree.printInOrder(true);
-            int val = scanner.nextInt();
-            int ans = inorderSuccessor(tree, val);
-            System.out.println(ans);
             t -= 1;
         }
         scanner.close();
     }
 
-    private static int inorderSuccessor(BST tree, Integer val) {
-        return perform(tree.root, val);
+    private static NaryTreeNode createNaryNode(int val) {
+        NaryTreeNode node = new NaryTreeNode();
+        node.val = val;
+        node.child = new NaryTreeNode[0];
+        return node;
+    }
+    
+    private static TreeNode convertNaryToBT(NaryTreeNode root) {
+        if (root == null) {
+            return null;
+        }
+
+        TreeNode prev = null;
+        TreeNode head = null;
+        for (int i=0; i<root.child.length; i++) {
+            TreeNode node = convertNaryToBT(root.child[i]);
+            if (prev == null) {
+                prev = node;
+                head = node;
+            } else {
+                if (prev.left == null) {
+                    prev.left = node;
+                } else {
+                    prev.right = node;
+                }
+                prev = node;
+            }
+        }
+        TreeNode btRoot = new TreeNode();
+        btRoot.val = root.val;
+        btRoot.left = head;
+        return btRoot;
     }
 
-
-    /*
-     * Logic here is:
-     *  1) if current <= val - check on right
-     *  2) if current > val - check on left 
-     * 
-     * since we need to find successor, current node could be successor only when val lies in the left subtree
-     * therefore from the result of left subtree
-     *  - if returned is -1 that means, successor is not yet found, and current node is first node that is visited after val, 
-     *      therefore current node is the sucessor
-     *  - if returned is not -1 that means, successor has been found, therefore just return as it is.
-     * 
-     * 
-     * Note this approach does not checks if val lies in the tree or not
-     * It will give arithmetical successor of the val if val is not present in the tree
-     */
-    private static Integer perform(Node<Integer> root, Integer val) {
+    private static void printLevelOrder(TreeNode root, int level) {
         if (root == null) {
-            return -1;
+            return;
         }
 
-        if (root.data <= val) {
-            return perform(root.right, val);
-        } else {
-            int left = perform(root.left, val);
-            return (left == -1) ? root.data : left;
+        if (level == 1) {
+            System.out.print(root.val + " ");
+        } else if (level > 1) {
+            printLevelOrder(root.left, level-1);
+            printLevelOrder(root.right, level-1);
         }
+    }
+
+    public static int getHeight(TreeNode root) {
+        if (root == null) {
+            return 0;
+        }
+        int left = getHeight(root.left);
+        int right = getHeight(root.right);
+
+        return Math.max(left, right) + 1;
     }
 }

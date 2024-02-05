@@ -1,0 +1,80 @@
+https://leetcode.com/problems/number-of-submatrices-that-sum-to-target/description/
+
+
+
+// idea is to compute prefix sum of each row elements
+// then iterate on each column subarray (ie col0 to col0, col0 to col1, col0 to col2 so on...)
+
+// https://www.youtube.com/watch?v=-SWrz90jCUM
+
+class Solution {
+    public int numSubmatrixSumTarget(int[][] matrix, int k) {
+        int m = matrix.length;
+        int n = matrix[0].length;
+
+        for (int i=0; i<m; i++) {
+            for (int j=1; j<n; j++) {
+                matrix[i][j] += matrix[i][j-1];
+            }
+        }
+
+        int result = 0;
+        for (int startCol=0; startCol<n; startCol++) {
+            for (int col=startCol; col<n; col++) {
+                HashMap<Integer, Integer> map = new HashMap<>();
+                map.put(0, 1);
+                int cummulativeSum = 0;
+                for (int row=0; row<m; row++) {
+                    cummulativeSum += matrix[row][col] - (startCol > 0 ? matrix[row][startCol-1] : 0);
+                    int target = cummulativeSum - k;
+                    if (map.containsKey(target)) {
+                        result += map.get(target);
+                    }
+                    map.put(cummulativeSum, map.getOrDefault(cummulativeSum, 0) + 1);
+                }
+                map.clear();        
+            }
+        }
+
+        return result;
+    }
+}
+
+
+
+
+
+
+
+
+Related 1D problem:
+
+https://leetcode.com/problems/subarray-sum-equals-k/description/
+
+
+/*
+    for positive only array we can use sliding window, but for negative + positive
+    we need to use pre fix sum with map 
+
+    logic: 
+        - sum from index 0 - x = sumx
+        - sum from index 0 - y = sumy
+        - sum of subarray x - y [y >= x] => sumy - sumx (excluding x)
+*/
+class Solution {
+    public int subarraySum(int[] nums, int k) {
+        HashMap<Integer, Integer> map = new HashMap<>();
+        int result = 0;
+        int sum = 0;
+        map.put(0, 1);
+        for (int i = 0; i < nums.length; i++) {
+            sum += nums[i];
+            int target = sum - k;
+            if (map.containsKey(target)) {
+                result += map.get(target);
+            }
+            map.put(sum, map.getOrDefault(sum, 0) + 1);
+        }
+        return result;
+    }
+}

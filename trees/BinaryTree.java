@@ -22,18 +22,32 @@ public class BinaryTree<T> {
         if (values == null || values.isEmpty()) {
             return;
         }
-
-        root = createBinaryTreeRecursive(values, 0);
+        root = createBT(values);
     }
 
-    private Node<T> createBinaryTreeRecursive(List<T> values, int index) {
-        if (index < values.size() && Objects.nonNull(values.get(index))) {
-            Node<T> node = new Node<>(values.get(index));
-            node.left = createBinaryTreeRecursive(values, 2*index+1);
-            node.right = createBinaryTreeRecursive(values, 2*index+2);
-            return node;
+    private Node<T> createBT(List<T> nodes) {
+        if (nodes.size() == 0 || Objects.equals(nodes.get(0), "null")) {
+            return null;
         }
-        return null;
+        Queue<Node<T>> q = new LinkedList<>();
+        int idx = 0;
+        Node<T> root = new Node<>(nodes.get(idx));
+        q.add(root);
+        while (!q.isEmpty()) {
+            Node<T> front = q.poll();
+            if (++idx < nodes.size() && !Objects.equals(nodes.get(idx), "null")) {
+                Node<T> left = new Node<>(nodes.get(idx));
+                front.left = left;
+                q.add(left);
+            }
+
+            if (++idx < nodes.size() && !Objects.equals(nodes.get(idx), "null")) {
+                Node<T> right = new Node<>(nodes.get(idx));
+                front.right = right;
+                q.add(right);
+            }
+        }
+        return root;
     }
 
     public int getHeight(Node<T> root) {

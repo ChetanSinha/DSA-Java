@@ -1,0 +1,100 @@
+//https://leetcode.com/problems/out-of-boundary-paths/
+
+
+
+/*
+    3D tabulation (bottom up)
+
+    as in recursion we computed small problems first to solve bigger problems
+    therefore in tabulation, we solve for each move (till max move) starting from 1
+    which would help for greater moves
+*/
+
+class Solution {
+
+    int[][] direction = {
+        {1, 0},
+        {0, -1},
+        {-1, 0},
+        {0, 1}
+    };
+
+    public int findPaths(int m, int n, int maxMove, int r, int c) {
+        int[][][] dp = new int[m][n][maxMove+1];
+        for (int i=0; i<dp.length; i++) {
+            for (int j=0; j<dp[0].length; j++) {
+                Arrays.fill(dp[i][j], 0);
+            }
+        }
+        
+        int mod = 1000000007;
+        for (int i=1; i<=maxMove; i++) {
+            for (int j=0; j<dp.length; j++) {
+                for (int k=0; k<dp[j].length; k++) {
+                    
+                    for (int d=0; d<direction.length; d++) {
+                        int x = j + direction[d][0];
+                        int y = k + direction[d][1];
+
+
+                        // we are update dp of i,k,i because since we can visited same cell multiple times
+                        // during visit for a move, therefore we update the number there
+                        if (x < 0 || x > dp.length-1 || y < 0 || y > dp[j].length-1) {
+                            dp[j][k][i] = (dp[j][k][i] + 1) % mod;
+                        } else {
+                            dp[j][k][i] = (dp[j][k][i] + dp[x][y][i-1]) % mod;
+                        }
+                    }
+                }
+            }
+        }
+        return dp[r][c][maxMove];
+    }
+}
+
+
+
+
+/*
+    3D memoization
+*/
+class Solution {
+
+    int[][] direction = {
+        {1, 0},
+        {0, -1},
+        {-1, 0},
+        {0, 1}
+    };
+
+    private int func(int m, int n, int moveLeft, int r, int c, int[][][] dp) {
+        if (moveLeft < 0) {
+            return 0;
+        }
+
+        if (r < 0 || r >= m || c < 0 || c >= n) {
+            return 1;
+        }
+
+        if (dp[r][c][moveLeft] != -1) {
+            return dp[r][c][moveLeft];
+        }
+
+        long ans = 0;
+        int mod = 1000000007;
+        for (int i=0; i<direction.length; i++) {
+            ans += (func(m, n, moveLeft-1, r+direction[i][0], c+direction[i][1], dp)) % mod;
+        }        
+        return dp[r][c][moveLeft] = (int) (ans % mod);
+    }
+
+    public int findPaths(int m, int n, int maxMove, int startRow, int startColumn) {
+        int[][][] dp = new int[m][n][maxMove+1];
+        for (int i=0; i<dp.length; i++) {
+            for (int j=0; j<dp[0].length; j++) {
+                Arrays.fill(dp[i][j], -1);
+            }
+        }
+        return func(m, n, maxMove, startRow, startColumn, dp);
+    }
+}

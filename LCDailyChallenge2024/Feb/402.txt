@@ -1,0 +1,45 @@
+https://leetcode.com/problems/minimum-window-substring/description/
+
+
+
+// sliding window
+class Solution {
+    public String minWindow(String s, String t) {
+        HashMap<Character, Integer> counts = new HashMap<>();
+        for (int i=0; i<t.length(); i++) {
+            counts.put(t.charAt(i), counts.getOrDefault(t.charAt(i), 0) + 1);
+        }
+
+        int unique = counts.size();
+        int start = 0;
+        int end = 0;
+        int ans = Integer.MAX_VALUE;
+        String ansStr = "";
+
+        while (end < s.length()) {
+            if (counts.containsKey(s.charAt(end))) {
+                counts.put(s.charAt(end), counts.get(s.charAt(end))-1);
+                if (counts.get(s.charAt(end)) == 0) {
+                    unique -= 1;
+                }
+            }
+
+            while (unique == 0) {
+                if (ans > (end-start+1)) {
+                    ans = end-start+1;
+                    ansStr = s.substring(start, end+1);
+                }
+                if (counts.containsKey(s.charAt(start))) {
+                    counts.put(s.charAt(start), counts.get(s.charAt(start))+1);
+                    if (counts.get(s.charAt(start)) > 0) {
+                        unique += 1;
+                    }
+                }
+                start += 1;
+            }
+            end += 1;
+        }
+
+        return ansStr;
+    }
+}

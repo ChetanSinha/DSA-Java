@@ -1,0 +1,36 @@
+https://leetcode.com/problems/evaluate-reverse-polish-notation/description/
+
+class Solution {
+    private int evaluate(int operand1, int operand2, String operator) {
+        if (operator.equals("+")) {
+            return operand1 + operand2;
+        }
+        if (operator.equals("-")) {
+            return operand1 - operand2;
+        }
+        if (operator.equals("*")) {
+            return operand1 * operand2;
+        }
+        if (operator.equals("/")) {
+            return operand1 / operand2;
+        }
+        return 0;
+    }
+
+    public int evalRPN(String[] tokens) {
+        Stack<Integer> stack = new Stack<>();
+        for (String str : tokens) {
+            try {
+                int num = Integer.parseInt(str);
+                stack.add(num);
+            } catch (NumberFormatException e) {
+                int secondOperand = stack.pop();
+                int firstOperand = stack.pop();
+                int ans = evaluate(firstOperand, secondOperand, str);
+                stack.add(ans);
+            }
+        }
+
+        return stack.pop();
+    }
+}

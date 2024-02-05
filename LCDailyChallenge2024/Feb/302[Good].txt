@@ -1,0 +1,34 @@
+https://leetcode.com/problems/partition-array-for-maximum-sum/description/
+
+
+// generate all possible cases.
+class Solution {
+
+    private int func(int[] arr, int idx, int K, int[] dp) {
+        if (idx >= arr.length) {
+            return 0;
+        }
+
+        if (dp[idx] != -1) {
+            return dp[idx];
+        }
+
+        int max = 0;
+        int ans = 0;
+
+
+        // from each index, trie to take 1 to K elements - (or whatever is remaining in array)
+        for (int i=idx; i<Math.min(idx+K, arr.length); i++) {
+            max = Math.max(max, arr[i]); // maintain max in this subarray (from idx till i)
+            ans = Math.max(ans, (i-idx+1)*max + func(arr, i+1, K, dp)); // search for next subarray
+        }
+
+        return dp[idx] = ans;
+    }
+
+    public int maxSumAfterPartitioning(int[] arr, int k) {
+        int[] dp = new int[arr.length];
+        Arrays.fill(dp, -1);
+        return func(arr, 0, k, dp);
+    }
+}
